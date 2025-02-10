@@ -51,16 +51,17 @@ class HomeActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.toolbarHome)
 
-        binding.vpTabHome.adapter = TabHomeVPAdapter(this)
 
         val username = intent.getStringExtra("username")
 
         binding.tvHello.text = "Hello, $username"
 
+        binding.vpTabHome.adapter = TabHomeVPAdapter(this)
+
         TabLayoutMediator(binding.tlTabHome, binding.vpTabHome) { tab, position ->
             tab.text = when(position) {
                 0 -> "Items"
-                1 -> "Reviews"
+                1 -> "Map"
                 else -> "Items"
             }
 
@@ -73,15 +74,28 @@ class HomeActivity : AppCompatActivity() {
 
     }
 
+
+    private fun getCurrentUsername(): String {
+        val sharedPreferences = getSharedPreferences("userPrefs", Context.MODE_PRIVATE)
+        return sharedPreferences.getString("username", "") ?: ""
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu, menu)
+
+        val currentUsername = getCurrentUsername()
+
+        if (currentUsername == "admin") {
+            menu?.findItem(R.id.menu_admin)?.isVisible = true
+        }
+
         return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
-            R.id.menu_profile -> {
-                val intent = Intent(this, InternalExternalStorageActivity::class.java)
+            R.id.menu_admin -> {
+                val intent = Intent(this, AdminActivity::class.java)
                 startActivity(intent)
             }
 
@@ -95,7 +109,6 @@ class HomeActivity : AppCompatActivity() {
                 startActivity(intent)
             }
 
-            R.id.menu_profile -> Toast.makeText(this, "Profile menu clicked", Toast.LENGTH_SHORT).show()
             R.id.menu_log_out -> Toast.makeText(this, "Log Out menu clicked", Toast.LENGTH_SHORT).show()
         }
         return super.onOptionsItemSelected(item)

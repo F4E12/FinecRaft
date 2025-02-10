@@ -1,5 +1,6 @@
 package com.example.qualif
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -48,6 +49,8 @@ class MainActivity : AppCompatActivity() {
             Log.i("LOGIN_PASSWORD", password.toString())
             val intent = Intent(this, HomeActivity::class.java)
             intent.putExtra("username", username.toString())
+            val sharedPreferences = getSharedPreferences("userPrefs", Context.MODE_PRIVATE)
+            sharedPreferences.edit().putString("username", username.toString()).apply()
             startActivity(intent)
         }
 

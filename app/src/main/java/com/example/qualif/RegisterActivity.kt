@@ -32,7 +32,6 @@ class RegisterActivity : AppCompatActivity(){
             val password = binding.etPassword.text
             val rbMale = binding.rbMale.isChecked
             val rbFemale = binding.rbFemale.isChecked
-            val switchAdmin = binding.switchAdmin.isChecked
             val cbTnc = binding.cbTnc.isChecked
 
             if (username.isEmpty()) {
@@ -41,8 +40,6 @@ class RegisterActivity : AppCompatActivity(){
                 Toast.makeText(this, "Password cannot be empty", Toast.LENGTH_SHORT).show()
             } else if (!rbMale && !rbFemale) {
                 Toast.makeText(this, "Gender must be selected", Toast.LENGTH_SHORT).show()
-            } else if (!switchAdmin) {
-                Toast.makeText(this, "Admin System must be toggled", Toast.LENGTH_SHORT).show()
             } else if (!cbTnc) {
                 Toast.makeText(this, "You must agree to the terms and conditions", Toast.LENGTH_SHORT).show()
             } else {

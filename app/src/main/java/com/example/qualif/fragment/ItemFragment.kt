@@ -1,6 +1,8 @@
 package com.example.qualif.fragment
 
 
+import android.content.Context
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -36,75 +38,73 @@ class ItemFragment : Fragment() {
         requestQueue = Volley.newRequestQueue(context)
 
         setUpRecycler()
+        val url = "https://api.npoint.io/507e2dd338984672df78"
+        requestQueue = Volley.newRequestQueue(requireContext())  // Ensure this is initialized
 
-        binding.btnGetData.setOnClickListener{
-            val url = "https://api.npoint.io/f73e99dc82d371c28ab9"
-            val request = JsonObjectRequest(Request.Method.GET, url, null, { response ->
-                try {
-                    databaseHelper.deleteAllItem()
-                    val itemArray = response.getJSONArray("items")
-                    for (i in 0 until itemArray.length()) {
-                        val itemObject = itemArray.getJSONObject(i)
-                        val item = Item(
-                            0,
-                            itemObject.getString("name"),
-                            itemObject.getString("description")
-                        )
-                        databaseHelper.insertItem(item)
-                    }
-                    setUpRecycler()
-                } catch (e: JSONException) {
-                    Toast.makeText(context, "Get data from url error: ${e.message}", Toast.LENGTH_SHORT).show()
+        if (!isInternetAvailable()) {
+            Toast.makeText(context, "No Internet Connection!", Toast.LENGTH_SHORT).show()
+            return binding.root
+        }
+
+        val request = JsonObjectRequest(Request.Method.GET, url, null, { response ->
+            try {
+                Log.d("API Response", response.toString()) // Debugging log
+
+                if (!response.has("items")) {
+                    Toast.makeText(context, "Invalid API response!", Toast.LENGTH_SHORT).show()
+                    return@JsonObjectRequest
                 }
-            },{ error ->
-                Log.e("Volley error", error.toString())
-            })
-            requestQueue.add(request)
-        }
 
-        binding.btnAdd.setOnClickListener {
-            val name = binding.etItemName.text.toString()
-            val description = binding.etItemDescription.text.toString()
+                databaseHelper.deleteAllItems()
+                val itemArray = response.getJSONArray("items")
+                for (i in 0 until itemArray.length()) {
+                    val itemObject = itemArray.getJSONObject(i)
 
-            databaseHelper.insertItem(Item(0, name, description))
-            resetUI()
-            setUpRecycler()
-        }
+                    // Check for missing keys
+                    if (!itemObject.has("name") || !itemObject.has("description") ||
+                        !itemObject.has("price") || !itemObject.has("compatible_minecraft_version")) {
+                        continue
+                    }
 
-        binding.btnUpdate.setOnClickListener {
-            val id = binding.etItemId.text.toString()
+                    val item = Item(
+                        0,
+                        itemObject.getString("name"),
+                        itemObject.getString("description"),
+                        itemObject.optDouble("price", 0.0), // Default price = 0.0 if missing
+                        itemObject.getString("compatible_minecraft_version")
+                    )
+                    databaseHelper.insertItem(item)
+                }
 
-            val name = binding.etItemName.text.toString()
-            val description = binding.etItemDescription.text.toString()
-
-            if(id.isDigitsOnly()){
-                databaseHelper.updateItem(Item(id.toInt(), name, description))
-                resetUI()
-                setUpRecycler()
-            }else{
-                Toast.makeText(requireContext(), "Id must be numeric", Toast.LENGTH_SHORT).show()
+                // Ensure UI is loaded before calling
+                if (isAdded && context != null) {
+                    setUpRecycler()
+                }
+            } catch (e: JSONException) {
+                Toast.makeText(context, "JSON Parsing Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                Log.e("JSON Error", e.message.toString())
             }
-        }
+        }, { error ->
+            Log.e("Volley error", error.toString())
+            Toast.makeText(context, "Network error: ${error.message}", Toast.LENGTH_SHORT).show()
+        })
 
-        binding.btnDelete.setOnClickListener {
-            val id = binding.etItemId.text.toString()
-
-            databaseHelper.deleteItem(id)
-            resetUI()
-            setUpRecycler()
-        }
+        requestQueue.add(request)
 
         return binding.root
     }
 
-    private fun resetUI() {
-        binding.etItemId.text.clear()
-        binding.etItemName.text.clear()
-        binding.etItemDescription.text.clear()
+    private fun isInternetAvailable(): Boolean {
+        val connectivityManager = requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val networkInfo = connectivityManager.activeNetworkInfo
+        return networkInfo != null && networkInfo.isConnected
     }
 
     private fun setUpRecycler() {
         val items = databaseHelper.getItems()
+        if (items.isEmpty()) {
+            Toast.makeText(context, "No items available!", Toast.LENGTH_SHORT).show()
+        }
         itemAdapter = ItemAdapter(requireContext(), items)
 
         binding.rvItemList.adapter = itemAdapter
