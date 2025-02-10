@@ -8,15 +8,20 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.qualif.database.DatabaseHelper
 import com.example.qualif.databinding.ActivityRegisterBinding
+import com.example.qualif.model.User
 
 class RegisterActivity : AppCompatActivity(){
 
     private lateinit var binding: ActivityRegisterBinding
+    private lateinit var databaseHelper: DatabaseHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        databaseHelper = DatabaseHelper(this)
 
         binding = ActivityRegisterBinding.inflate(layoutInflater)
 
@@ -29,17 +34,19 @@ class RegisterActivity : AppCompatActivity(){
 
         binding.btnRegister.setOnClickListener {
             val username = binding.etUsername.text
+            val email = binding.etEmail.text
             val password = binding.etPassword.text
-            val rbMale = binding.rbMale.isChecked
-            val rbFemale = binding.rbFemale.isChecked
+            val phone = binding.etPhone.text
             val cbTnc = binding.cbTnc.isChecked
 
-            if (username.isEmpty()) {
+            if (email.isEmpty()) {
+                Toast.makeText(this, "Email cannot be empty", Toast.LENGTH_SHORT).show()
+            }else if (username.isEmpty()) {
                 Toast.makeText(this, "Username cannot be empty", Toast.LENGTH_SHORT).show()
             } else if (password.isEmpty()) {
                 Toast.makeText(this, "Password cannot be empty", Toast.LENGTH_SHORT).show()
-            } else if (!rbMale && !rbFemale) {
-                Toast.makeText(this, "Gender must be selected", Toast.LENGTH_SHORT).show()
+            }else if (password.isEmpty()) {
+                Toast.makeText(this, "Phone cannot be empty", Toast.LENGTH_SHORT).show()
             } else if (!cbTnc) {
                 Toast.makeText(this, "You must agree to the terms and conditions", Toast.LENGTH_SHORT).show()
             } else {
@@ -48,12 +55,18 @@ class RegisterActivity : AppCompatActivity(){
                 builder.setTitle("Confirmation")
                 builder.setMessage("Are you sure want to register?")
 
-                builder.setPositiveButton("Yes") { dialog, which ->
-                    val intent = Intent(this,  MainActivity::class.java)
-                    startActivity(intent)
+                builder.setPositiveButton("Yes") { _, _ ->
+                    val newUser = User(0, username.toString(), email.toString(), password.toString(), phone.toString())
+                    if (databaseHelper.insertUser(newUser)) {
+                        Toast.makeText(this, "Registration successful!", Toast.LENGTH_SHORT).show()
+                        startActivity(Intent(this, MainActivity::class.java))
+                        finish()
+                    } else {
+                        Toast.makeText(this, "Email already exists!", Toast.LENGTH_SHORT).show()
+                    }
                 }
 
-                builder.setNegativeButton("No") { dialog, which -> {
+                builder.setNegativeButton("No") { dialog, _ -> {
                     dialog.dismiss()
                 }}
 

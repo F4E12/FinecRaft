@@ -9,8 +9,6 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.example.qualif.adapter.TabHomeVPAdapter
 import com.example.qualif.databinding.ActivityHomeBinding
 import com.google.android.material.tabs.TabLayoutMediator
@@ -25,28 +23,28 @@ class HomeActivity : AppCompatActivity() {
 
         binding = ActivityHomeBinding.inflate(layoutInflater)
 
-        val sharedPreferences = getSharedPreferences("userPref", Context.MODE_PRIVATE)
-        val darkTheme = sharedPreferences.getBoolean("isDarkTheme", false)
-
-        if (darkTheme) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            binding.switchTheme.isChecked = true
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            binding.switchTheme.isChecked = false
-        }
-
-        binding.switchTheme.setOnCheckedChangeListener { _, isChecked ->
-            val editor = sharedPreferences.edit()
-            if (isChecked) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                editor.putBoolean("isDarkTheme", true)
-            } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                editor.putBoolean("isDarkTheme", false)
-            }
-            editor.apply()
-        }
+//        val sharedPreferences = getSharedPreferences("userPref", Context.MODE_PRIVATE)
+//        val darkTheme = sharedPreferences.getBoolean("isDarkTheme", false)
+//
+//        if (darkTheme) {
+//            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+//            binding.switchTheme.isChecked = true
+//        } else {
+//            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+//            binding.switchTheme.isChecked = false
+//        }
+//
+//        binding.switchTheme.setOnCheckedChangeListener { _, isChecked ->
+//            val editor = sharedPreferences.edit()
+//            if (isChecked) {
+//                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+//                editor.putBoolean("isDarkTheme", true)
+//            } else {
+//                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+//                editor.putBoolean("isDarkTheme", false)
+//            }
+//            editor.apply()
+//        }
         setContentView(binding.root)
 
         setSupportActionBar(binding.toolbarHome)
@@ -92,6 +90,18 @@ class HomeActivity : AppCompatActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
+    private fun logout() {
+        val sharedPreferences = getSharedPreferences("userPrefs", Context.MODE_PRIVATE)
+        sharedPreferences.edit().clear().apply()
+
+        Toast.makeText(this, "Logged out successfully!", Toast.LENGTH_SHORT).show()
+
+        val intent = Intent(this, MainActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.menu_admin -> {
@@ -99,17 +109,10 @@ class HomeActivity : AppCompatActivity() {
                 startActivity(intent)
             }
 
-            R.id.menu_sms -> {
-                val intent = Intent(this, SmsActivity::class.java)
-                startActivity(intent)
+            R.id.menu_log_out -> {
+                logout()
+                true
             }
-
-            R.id.menu_map -> {
-                val intent = Intent(this, MapActivity::class.java)
-                startActivity(intent)
-            }
-
-            R.id.menu_log_out -> Toast.makeText(this, "Log Out menu clicked", Toast.LENGTH_SHORT).show()
         }
         return super.onOptionsItemSelected(item)
     }

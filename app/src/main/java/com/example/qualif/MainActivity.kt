@@ -12,16 +12,21 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.qualif.database.DatabaseHelper
 
 class MainActivity : AppCompatActivity() {
     private lateinit var etUsername: EditText
     private lateinit var etPassword: EditText
     private lateinit var btnLogin: Button
     private lateinit var tvRegister: TextView
+    private lateinit var databaseHelper: DatabaseHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        databaseHelper = DatabaseHelper(this)
+
         setContentView(R.layout.activity_main)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -44,19 +49,31 @@ class MainActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            Toast.makeText(this, "Login success", Toast.LENGTH_SHORT).show()
-            Log.i("LOGIN_USERNAME", username.toString())
-            Log.i("LOGIN_PASSWORD", password.toString())
-            val intent = Intent(this, HomeActivity::class.java)
-            intent.putExtra("username", username.toString())
-            val sharedPreferences = getSharedPreferences("userPrefs", Context.MODE_PRIVATE)
-            sharedPreferences.edit().putString("username", username.toString()).apply()
-            startActivity(intent)
+            if (databaseHelper.checkUserByUsername(username.toString(), password.toString())) {
+                Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show()
+                val sharedPreferences = getSharedPreferences("userPrefs", Context.MODE_PRIVATE)
+                sharedPreferences.edit().putString("username", username.toString()).apply()
+
+                val intent = Intent(this, HomeActivity::class.java)
+                intent.putExtra("username", username.toString())
+                startActivity(intent)
+            } else {
+                Toast.makeText(this, "Invalid username or password", Toast.LENGTH_SHORT).show()
+            }
         }
 
         tvRegister.setOnClickListener{
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
+        }
+
+
+        val sharedPreferences = getSharedPreferences("userPrefs", Context.MODE_PRIVATE)
+        val savedUsername = sharedPreferences.getString("username", null)
+        if (savedUsername != null) {
+            val intent = Intent(this, HomeActivity::class.java)
+            startActivity(intent)
+            finish()
         }
     }
 }

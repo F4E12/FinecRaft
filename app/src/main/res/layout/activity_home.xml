@@ -5,24 +5,34 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".HomeActivity"
     android:orientation="vertical">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/primary"
+        app:elevation="4dp">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar_home"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/primary"
+            app:title="FINECRAFT"
+            app:titleTextColor="@android:color/white"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-            <Switch
-                android:id="@+id/switch_theme"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end" />
-
+<!--            &lt;!&ndash; Theme Switch &ndash;&gt;-->
+<!--            <Switch-->
+<!--                android:id="@+id/switch_theme"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_gravity="end"-->
+<!--                android:text="Dark Mode"-->
+<!--                android:textColor="@android:color/white"-->
+<!--                android:paddingEnd="10dp"/>-->
         </androidx.appcompat.widget.Toolbar>
 
         <View
@@ -33,23 +43,33 @@
 
     <TextView
         android:id="@+id/tv_hello"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Hello, Username"
-        android:layout_margin="15dp"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:textColor="@android:color/black"
+        android:layout_marginTop="20dp"
+        android:padding="10dp" />
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tl_tab_home"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
-        />
+        app:tabIndicatorColor="@color/primary_dark"
+        app:tabSelectedTextColor="@color/primary"
+        app:tabTextColor="@android:color/darker_gray"
+        app:tabMode="fixed"
+        app:tabGravity="fill"
+        android:background="@android:color/white"
+        android:elevation="4dp" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/vp_tab_home"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@android:color/white" />
 
 </LinearLayout>

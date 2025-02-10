@@ -6,4 +6,25 @@
     <color name="teal_700">#00897B</color>
     <color name="purple_500">#6200EE</color>
     <color name="logo">#B0A7A4</color>
+
+    <color name="primary">#6200EE</color>
+    <color name="primary_dark">#3700B3</color>
+    <color name="accent">#03DAC5</color>
+
+    <color name="background">#FAFAFA</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="text_primary">#212121</color>
+    <color name="text_secondary">#757575</color>
+
+    <!-- Button & Tab Colors -->
+    <color name="button_color">#03A9F4</color>
+    <color name="button_text">#FFFFFF</color>
+
+    <!-- StatusBar & Toolbar -->
+    <color name="status_bar">#3700B3</color> <!-- Dark Purple -->
+
+    <!-- Error & Success Colors -->
+    <color name="error">#B00020</color> <!-- Deep Red -->
+    <color name="success">#388E3C</color> <!-- Green -->
+
 </resources>

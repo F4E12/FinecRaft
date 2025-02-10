@@ -30,9 +30,5 @@ class ItemAdapter(
         holder.binding.tvItemPrice.text = "Price: $${item.price}"
         holder.binding.tvItemVersion.text = "MC Version: ${item.compatibleMinecraftVersion}"
 
-        // Handle item click
-        holder.binding.cvItemCard.setOnClickListener {
-            onItemClick?.invoke(item)  // Trigger callback function
-        }
     }
 }
