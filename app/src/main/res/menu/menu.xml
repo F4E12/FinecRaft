@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/internal_external_storage_profile"
+        android:title="Internal External Storage Profile" />
+
+    <item
+        android:id="@+id/menu_sms"
+        android:title="SMS" />
+
+    <item
+        android:id="@+id/menu_map"
+        android:title="Map" />
+
+    <item
+        android:id="@+id/menu_profile"
+        android:title="Profile" />
+
+    <item
+        android:id="@+id/menu_log_out"
+        android:title="Log Out" />
+</menu>
